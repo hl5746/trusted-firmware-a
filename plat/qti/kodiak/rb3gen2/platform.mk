@@ -106,30 +106,12 @@ ifeq ($(QTISECLIB_PATH),)
 $(warning QTISECLIB_PATH is not provided while building, using stub implementation. \
 		Please refer to documentation for more details \
 		THIS FIRMWARE WILL NOT BOOT!)
-
-PLAT_QTI_SMMU_DRIVER	:=	1
-$(eval $(call add_define,PLAT_QTI_SMMU_DRIVER))
-
-BL31_SOURCES	+=	drivers/qti/smmu/smmu.c				\
-			drivers/qti/smmu/smmu_kodiak_cfg.c		
-
-include drivers/qti/accesscontrol/access_control.mk
-
-PLAT_INCLUDES	+=	-Iinclude/drivers/qti/sec_core/${CHIPSET} \
-			-Iinclude/drivers/qti/qtimer/${CHIPSET} \
-			-Iinclude/drivers/qti/watchdog/${CHIPSET}
-
 BL31_SOURCES	+=	plat/qti/qtiseclib/src/qtiseclib_interface_stub.c \
-			drivers/qti/sec_core/sec_core.c \
-			drivers/qti/qtimer/qtimer.c \
-			drivers/qti/watchdog/watchdog.c
+			drivers/qti/sec_core/sec_core.c
 else
 $(eval $(call add_define,QTISECLIB_PATH))
 # use library provided by QTISECLIB_PATH
-BL31_SOURCES	+=			drivers/qti/sec_core/sec_core_stub.c \
-					drivers/qti/qtimer/qtimer_stub.c \
-					drivers/qti/watchdog/watchdog_stub.c \
-					drivers/qti/accesscontrol/access_control_stub.c
+BL31_SOURCES	+=			drivers/qti/sec_core/sec_core_stub.c
 LDFLAGS += -L $(dir $(QTISECLIB_PATH))
 LDLIBS += -l$(patsubst lib%.a,%,$(notdir $(QTISECLIB_PATH)))
 endif
