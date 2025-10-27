@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026, Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * Copyright (c) 2025 Qualcomm Technologies, Inc. and/or its subsidiaries.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,7 +9,7 @@
 #include <drivers/qti/sec_core/sec_core.h>
 #include <lib/mmio.h>
 
-#include <sec_core_defs.h>
+#include <qti_sec_core.h>
 
 void qti_sec_core_remap(uintptr_t entrypoint)
 {
