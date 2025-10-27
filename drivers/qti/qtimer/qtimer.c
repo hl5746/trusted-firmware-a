@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026, Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * Copyright (c) 2025 Qualcomm Technologies, Inc. and/or its subsidiaries.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -8,7 +8,7 @@
 #include <drivers/qti/qtimer/qtimer.h>
 #include <lib/mmio.h>
 
-#include <qtimer_defs.h>
+#include <qti_qtimer.h>
 
 #define	QTIMER_FREQ_IN_100KHZ		192ULL
 
@@ -22,12 +22,12 @@ void qti_qtimer_init(void)
 {
 	uint8_t i;
 
-	mmio_write_32(QTI_QTIMER_BASE + SAR_FG0_OFFSET, 0x7F);
+	mmio_write_32(QTIMER_BASE_ADDRESS + SAR_FG0_OFFSET, 0x7F);
 
 	for (i = 0; i < QTIMER_NBR_FRAMES; i++) {
-		mmio_write_32(QTI_QTIMER_BASE + ACR_FG0_OFFSET(i), 0x3F);
-		mmio_write_32(QTI_QTIMER_BASE + VOFF_FG0_LO_OFFSET(i), 0x0);
-		mmio_write_32(QTI_QTIMER_BASE + VOFF_FG0_HI_OFFSET(i), 0x0);
+		mmio_write_32(QTIMER_BASE_ADDRESS + ACR_FG0_OFFSET(i), 0x3F);
+		mmio_write_32(QTIMER_BASE_ADDRESS + VOFF_FG0_LO_OFFSET(i), 0x0);
+		mmio_write_32(QTIMER_BASE_ADDRESS + VOFF_FG0_HI_OFFSET(i), 0x0);
 	}
 
 	dsbsy();
