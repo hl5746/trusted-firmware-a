@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026, Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * Copyright (c) 2025 Qualcomm Technologies, Inc. and/or its subsidiaries.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -16,10 +16,10 @@
 #include <lib/spinlock.h>
 #include <lib/utils_def.h>
 #include <platform.h>
-#include <watchdog_defs.h>
 
 #include <qti_interrupt_svc.h>
 #include <qti_plat.h>
+#include <qti_watchdog.h>
 
 #define WDOG_BITE_TIME_MS	22000U
 #define WDOG_BARK_TIME_MS	6000U
