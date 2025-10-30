@@ -11,6 +11,7 @@
 #include <bl31/interrupt_mgmt.h>
 #include <common/debug.h>
 #include <drivers/arm/gic_common.h>
+#include <common/debug.h>
 #include <lib/el3_runtime/context_mgmt.h>
 #include <lib/spinlock.h>
 #include <lib/utils_def.h>
