@@ -34,8 +34,8 @@ COLD_BOOT_SINGLE_CPU			:=	1
 PROGRAMMABLE_RESET_ADDRESS		:=	1
 
 # Enable XPU bypass
-QTI_MSM_XPU_BYPASS			:=	1
-$(eval $(call add_define,QTI_MSM_XPU_BYPASS))
+QTI_XPU_BYPASS				:=	1
+$(eval $(call add_define,QTI_XPU_BYPASS))
 
 # Enable the dynamic translation tables library
 PLAT_XLAT_TABLES_DYNAMIC		:=	1
@@ -78,6 +78,7 @@ BL2_SOURCES		+=	drivers/io/io_fip.c					\
 				$(PLAT_PATH)/common/src/qti_io_storage.c
 
 include drivers/arm/gic/v3/gicv3.mk
+include drivers/qti/smmu/driver.mk
 BL31_SOURCES		+=	drivers/delay_timer/generic_delay_timer.c		\
 				drivers/delay_timer/delay_timer.c			\
 				plat/common/plat_gicv3.c				\
@@ -92,7 +93,12 @@ BL31_SOURCES		+=	drivers/delay_timer/generic_delay_timer.c		\
 				$(PLAT_PATH)/common/src/qti_topology.c			\
 				$(PLAT_PATH)/common/src/qti_pm.c			\
 				$(PLAT_PATH)/common/src/spmi_arb.c			\
-				$(PLAT_PATH)/qtiseclib/src/qtiseclib_cb_interface.c
+				$(PLAT_PATH)/qtiseclib/src/qtiseclib_cb_interface.c \
+				\
+				drivers/qti/smmu/smmu.c \
+				drivers/qti/smmu/smmu_soc_cfg.c
+
+
 
 # Override this on the command line to point to the qtiseclib library
 QTISECLIB_PATH ?=
@@ -119,3 +125,4 @@ BL31_SOURCES	+=			drivers/qti/sec_core/sec_core_stub.c \
 LDFLAGS += -L $(dir $(QTISECLIB_PATH))
 LDLIBS += -l$(patsubst lib%.a,%,$(notdir $(QTISECLIB_PATH)))
 endif
+
