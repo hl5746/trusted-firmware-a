@@ -21,6 +21,8 @@
 #include <drivers/qti/accesscontrol/accesscontrol.h>
 
 #include <qti_plat.h>
+#include <drivers/qti/accesscontrol/accesscontrol.h>
+
 #include <qti_secure_io_cfg.h>
 
 /*

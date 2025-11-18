@@ -109,6 +109,7 @@ void bl31_platform_setup(void)
 	qti_qtimer_init();
 	if (qti_watchdog_init())
 		ERROR("Watchdog initialization error\n");
+	qti_accesscontrol_init();
 	qtiseclib_bl31_platform_setup();
 
 	/* set boot state to cold boot complete. */
