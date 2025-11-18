@@ -1,81 +1,83 @@
 /*
- * Copyright (c) 2026, Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include <lib/mmio.h>
 #include <lib/utils_def.h>
+
 #include <xpu_target_info.h>
 
-struct xpu_err_pos_to_hal_map xpu_err_pos_to_hal_map
-	[ACC_XPU_ERR_INT_REG_NUM][ACC_XPU_ERR_NUM_PER_REG] = {
-		{
-			{ BIT(1), XPU_TYPE_AOSS_CNOC_MPU },
-			{ BIT(9), XPU_TYPE_SEC_CTRL_APU },
-			{ BIT(10), XPU_TYPE_WPSS_MPU },
-			{ BIT(16), XPU_TYPE_AOSS_MPU },
-			{ BIT(18), XPU_TYPE_CNOC_GEMNOC_MPU },
-			{ BIT(25), XPU_TYPE_LLCC_BROADCAST_MPU },
-			{ BIT(26), XPU_TYPE_BIMC_MPU0 },
-			{ BIT(27), XPU_TYPE_BIMC_MPU1 },
-			{ BIT(30), XPU_TYPE_BOOT_ROM },
-			{ BIT(31), XPU_TYPE_DC_NOC_NON_BROADCAST_MPU },
-			{ 0, 0 },
-		},
-		{
-			{ BIT(0), XPU_TYPE_IMEM_MPU },
-			{ BIT(1), XPU_TYPE_ANOC1_MPU },
-			{ BIT(2), XPU_TYPE_ANOC2_MPU },
-			{ BIT(3), XPU_TYPE_MSS_MPU },
-			{ BIT(6), XPU_TYPE_CNOC2_SS_MPU },
-			{ BIT(10), XPU_TYPE_MSS_Q6_MPU },
-			{ BIT(11), XPU_TYPE_IPA_0_GSI_TOP },
-			{ BIT(13), XPU_TYPE_DC_NOC_SHRM_MPU },
-			{ BIT(14), XPU_TYPE_PKA_APU },
-			{ BIT(16), XPU_TYPE_IPC_MPU },
-			{ BIT(30), XPU_TYPE_MSS_NAV_MPU },
-			{ 0, 0 },
-		},
-	};
+xpu_err_pos_to_hal_map_t xpu_err_pos_to_hal_map
+	[MSM_XPU_ERR_INT_REG_NUM][MSM_XPU_ERR_NUM_PER_REG] = {
+	{
+		{ BIT(1),  XPU_TYPE_AOSS_CNOC_MPU            },
+		{ BIT(9),  XPU_TYPE_SEC_CTRL_APU             },
+		{ BIT(10), XPU_TYPE_WPSS_MPU                 },
+		{ BIT(16), XPU_TYPE_AOSS_MPU                 },
+		{ BIT(18), XPU_TYPE_CNOC_GEMNOC_MPU          },
+		{ BIT(25), XPU_TYPE_LLCC_BROADCAST_MPU       },
+		{ BIT(26), XPU_TYPE_BIMC_MPU0                },
+		{ BIT(27), XPU_TYPE_BIMC_MPU1                },
+		{ BIT(30), XPU_TYPE_BOOT_ROM                 },
+		{ BIT(31), XPU_TYPE_DC_NOC_NON_BROADCAST_MPU },
+		{ 0,       0                                 },
+	},
+	{
+		{ BIT(0),  XPU_TYPE_IMEM_MPU                 },
+		{ BIT(1),  XPU_TYPE_ANOC1_MPU                },
+		{ BIT(2),  XPU_TYPE_ANOC2_MPU                },
+		{ BIT(3),  XPU_TYPE_MSS_MPU                  },
+		{ BIT(6),  XPU_TYPE_CNOC2_SS_MPU             },
+		{ BIT(10), XPU_TYPE_MSS_Q6_MPU               },
+		{ BIT(11), XPU_TYPE_IPA_0_GSI_TOP            },
+		{ BIT(13), XPU_TYPE_DC_NOC_SHRM_MPU          },
+		{ BIT(14), XPU_TYPE_PKA_APU                  },
+		{ BIT(16), XPU_TYPE_IPC_MPU                  },
+		{ BIT(30), XPU_TYPE_MSS_NAV_MPU              },
+		{ 0,       0                                 },
+	},
+};
 
-const struct xpu_intr_reg_dtls
-	xpu_non_sec_intr_status_reg[ACC_XPU_ERR_INT_REG_NUM] = {
-		{
-			HWIO_TCSR_XPU3_NON_SEC_IRQ_STATUS_REG_0_ADDR,
-			HWIO_TCSR_XPU3_NON_SEC_IRQ_STATUS_REG_0_RMSK,
-		},
-		{
-			HWIO_TCSR_XPU3_NON_SEC_IRQ_STATUS_REG_1_ADDR,
-			HWIO_TCSR_XPU3_NON_SEC_IRQ_STATUS_REG_1_RMSK,
-		},
-	};
+const xpu_intr_reg_dtls_t
+	xpu_non_sec_intr_status_reg[MSM_XPU_ERR_INT_REG_NUM] = {
+	{
+		HWIO_TCSR_XPU3_NON_SEC_IRQ_STATUS_REG_0_ADDR,
+		HWIO_TCSR_XPU3_NON_SEC_IRQ_STATUS_REG_0_RMSK,
+	},
+	{
+		HWIO_TCSR_XPU3_NON_SEC_IRQ_STATUS_REG_1_ADDR,
+		HWIO_TCSR_XPU3_NON_SEC_IRQ_STATUS_REG_1_RMSK,
+	},
+};
 
-const struct xpu_intr_reg_dtls
-	xpu_sec_intr_status_reg[ACC_XPU_ERR_INT_REG_NUM] = {
-		{
-			HWIO_TCSR_XPU3_SEC_IRQ_STATUS_REG_0_ADDR,
-			HWIO_TCSR_XPU3_SEC_IRQ_STATUS_REG_0_RMSK,
-		},
-		{
-			HWIO_TCSR_XPU3_SEC_IRQ_STATUS_REG_1_ADDR,
-			HWIO_TCSR_XPU3_SEC_IRQ_STATUS_REG_1_RMSK,
-		},
-	};
+const xpu_intr_reg_dtls_t
+	xpu_sec_intr_status_reg[MSM_XPU_ERR_INT_REG_NUM] = {
+	{
+		HWIO_TCSR_XPU3_SEC_IRQ_STATUS_REG_0_ADDR,
+		HWIO_TCSR_XPU3_SEC_IRQ_STATUS_REG_0_RMSK,
+	},
+	{
+		HWIO_TCSR_XPU3_SEC_IRQ_STATUS_REG_1_ADDR,
+		HWIO_TCSR_XPU3_SEC_IRQ_STATUS_REG_1_RMSK,
+	},
+};
 
-const struct xpu_intr_reg_dtls
-	xpu_non_sec_intr_en_reg[ACC_XPU_ERR_INT_REG_NUM] = {
-		{
-			HWIO_TCSR_XPU3_NON_SEC_IRQ_ENABLE_0_REG_0_ADDR,
-			HWIO_TCSR_XPU3_NON_SEC_IRQ_ENABLE_0_REG_0_RMSK,
-		},
-		{
-			HWIO_TCSR_XPU3_NON_SEC_IRQ_ENABLE_0_REG_1_ADDR,
-			HWIO_TCSR_XPU3_NON_SEC_IRQ_ENABLE_0_REG_1_RMSK,
-		},
-	};
+const xpu_intr_reg_dtls_t
+	xpu_non_sec_intr_en_reg[MSM_XPU_ERR_INT_REG_NUM] = {
+	{
+		HWIO_TCSR_XPU3_NON_SEC_IRQ_ENABLE_0_REG_0_ADDR,
+		HWIO_TCSR_XPU3_NON_SEC_IRQ_ENABLE_0_REG_0_RMSK,
+	},
+	{
+		HWIO_TCSR_XPU3_NON_SEC_IRQ_ENABLE_0_REG_1_ADDR,
+		HWIO_TCSR_XPU3_NON_SEC_IRQ_ENABLE_0_REG_1_RMSK,
+	},
+};
 
-const struct xpu_intr_reg_dtls xpu_sec_intr_en_reg[ACC_XPU_ERR_INT_REG_NUM] = {
+const xpu_intr_reg_dtls_t
+	xpu_sec_intr_en_reg[MSM_XPU_ERR_INT_REG_NUM] = {
 	{
 		HWIO_TCSR_XPU3_SEC_IRQ_ENABLE_0_REG_0_ADDR,
 		HWIO_TCSR_XPU3_SEC_IRQ_ENABLE_0_REG_0_RMSK,
@@ -86,7 +88,7 @@ const struct xpu_intr_reg_dtls xpu_sec_intr_en_reg[ACC_XPU_ERR_INT_REG_NUM] = {
 	},
 };
 
-struct xpu_base_addr_info g_xpu_base_addr_array[] = {
+xpu_base_addr_info_t g_xpu_base_addr_array[] = {
 	{
 		XPU_TYPE_DC_NOC_SHRM_MPU,
 		XPU_ADDR_TYPE(QHM_SHRM_MPU_XPU3_GCR0),
@@ -200,3 +202,4 @@ void xpu_configure_tz(void)
 {
 	mmio_write_32(HWIO_IPA_0_GSI_TOP_XPU3_GCR0_ADDR + 0x8, 0x10f);
 }
+

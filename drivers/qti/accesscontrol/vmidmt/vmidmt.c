@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026, Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -16,7 +16,7 @@
 
 #include <qti_interrupt_svc.h>
 
-#define VMIDMT_INSTANCE(xx) ((enum hal_vmidmt_instance)(xx).table)
+#define VMIDMT_INSTANCE(xx) ((HAL_vmidmt_InstanceType)(xx).table)
 
 /* Maximum value for VMIDMT error status bit position.
  * Error status register is 32 bit so position ranges
@@ -24,26 +24,24 @@
  */
 #define VMIDMT_ERR_BIT_POS_MAX 31
 
-extern struct hal_vmidmt_port_map g_vmidmt_info_cfg[];
-
+extern HAL_vmidmt_Port_MapType g_vmidmt_info_cfg[HAL_VMIDMT_COUNT];
 extern const uint8_t g_vmidmt_info_cfg_count;
-extern const struct vmidmt_cfg g_vmidmt_cfg[];
-extern const struct vmidmt_map g_vmid_map[];
+extern const vmidmt_cfg_t g_vmidmt_cfg[];
+extern const vmidmt_map_t g_vmid_map[];
 extern const uint32_t g_vmidmt_cfg_count;
 extern const uint32_t g_vmid_map_count;
 
-extern struct vmidmt_err_pos_to_hal_map
-	vmidmt_err_pos_to_hal_map[ACC_VMIDMT_ERR_INT_STATUS_REG_NUM]
-				 [ACC_VMIDMT_ERR_NUM_PER_REG];
+extern vmidmt_err_pos_to_hal_map_t vmidmt_err_pos_to_hal_map
+	[MSM_VMIDMT_ERR_INT_STATUS_REG_NUM][MSM_VMIDMT_ERR_NUM_PER_REG];
 
 /* No access permissions to VMIDMT config registers to any non secure entity */
-struct hal_vmidmt_access_config acc_ctl = { { 0xFFFFFFFF }, { 0 } };
+HAL_vmidmt_AccessConfigType acc_ctl = { { 0xFFFFFFFF }, { 0 } };
 
 /* Interrupt contexts to distigunish type of error in VMIDMT error ISR */
-enum vmidmt_err_id { CLT_SEC = 0, CLT_NONSEC, CFG_SEC, CFG_NONSEC };
+typedef enum {CLT_SEC = 0, CLT_NONSEC, CFG_SEC, CFG_NONSEC } vmidmt_err_id_t;
 
 static struct vmidmt_err_ctx {
-	enum vmidmt_err_id id;
+	vmidmt_err_id_t id;
 	uint32_t addr;
 	uint32_t mask;
 	uint32_t reg;
@@ -74,9 +72,9 @@ static struct vmidmt_err_ctx {
 	},
 };
 
-static struct hal_vmidmt_port_map *get_info_cfg(uint8_t port)
+static HAL_vmidmt_Port_MapType *get_info_cfg(uint8_t port)
 {
-	struct hal_vmidmt_port_map *p = g_vmidmt_info_cfg;
+	HAL_vmidmt_Port_MapType *p = g_vmidmt_info_cfg;
 
 	for (size_t i = 0; i < g_vmidmt_info_cfg_count; i++, p++) {
 		if (p->port != port)
@@ -88,29 +86,30 @@ static struct hal_vmidmt_port_map *get_info_cfg(uint8_t port)
 	return NULL;
 }
 
-static int map_vmid_internal(enum hal_vmidmt_instance master, uint32_t index,
-			     const uint32_t *list, uint8_t len, uint32_t vmid,
+static int map_vmid_internal(HAL_vmidmt_InstanceType master,
+			     uint32_t index, const uint32_t *list,
+			     uint8_t len, uint32_t vmid,
 			     uint32_t mem_type, bool secure)
 {
-	struct hal_vmidmt_context_config ctx_cfg = { 0 };
-	struct hal_vmidmt_bus_attrib bus_attribs = { 0 };
-	struct hal_vmidmt_port_map *cfg;
-	enum hal_vmidmt_status rc;
+	HAL_vmidmt_ContextConfigType ctx_cfg = { 0 };
+	HAL_vmidmt_BusAttribType bus_attribs = { 0 };
+	HAL_vmidmt_Port_MapType *cfg;
+	HAL_vmidmt_Status rc;
 
 	cfg = get_info_cfg(master);
 	if (!cfg)
 		return -1;
 
-	if (mem_type != ACC_VMIDMT_MEMTYPE_DEFAULT) {
-		bus_attribs.e_mtcfg = HAL_VMIDMT_MTCFG_MEMATTR;
-		bus_attribs.mem_attr = mem_type;
+	if (mem_type != MSM_VMIDMT_MEMTYPE_DEFAULT) {
+		bus_attribs.eMTCFG = HAL_VMIDMT_MTCFG_MEMATTR;
+		bus_attribs.uMemAttr = mem_type;
 	}
 
 	if (secure)
-		bus_attribs.e_nscfg = HAL_VMIDMT_NSCFG_SECURE;
+		bus_attribs.eNSCFG = HAL_VMIDMT_NSCFG_SECURE;
 
-	ctx_cfg.p_bus_attrib = &bus_attribs;
-	ctx_cfg.u_vmid = vmid;
+	ctx_cfg.pBusAttrib = &bus_attribs;
+	ctx_cfg.uVmid = vmid;
 
 	rc = vmidmt_hal_config_ctx_ext(&cfg->vmidmt_info, index, list, len,
 				       &ctx_cfg);
@@ -132,10 +131,13 @@ static int32_t configure_vmids(void)
 		if (!g_vmid_map[i].static_cfg)
 			continue;
 
-		ret = map_vmid_internal(
-			VMIDMT_INSTANCE(g_vmid_map[i]), g_vmid_map[i].index,
-			g_vmid_map[i].sid_list, g_vmid_map[i].num_sids,
-			g_vmid_map[i].vmid, g_vmid_map[i].memattr, false);
+		ret = map_vmid_internal(VMIDMT_INSTANCE(g_vmid_map[i]),
+					g_vmid_map[i].index,
+					g_vmid_map[i].sid_list,
+					g_vmid_map[i].num_sids,
+					g_vmid_map[i].vmid,
+					g_vmid_map[i].memattr,
+					false);
 		if (ret)
 			goto error;
 	}
@@ -148,21 +150,21 @@ error:
 
 static int config_options_per_master(int index)
 {
-	struct hal_vmidmt_default_vmid_config vmid_cfg = {
-		.b_vmid_private_namespace_enable = false,
-		.bypass_vmid = ACC_VMID_NOACCESS,
-		.p_access_control = &acc_ctl,
-		.p_bypass_bus_attrib = NULL,
-		.p_bypass_aux_config = NULL,
+	HAL_vmidmt_DefaultVmidConfigType vmid_cfg = {
+		.bVmidPrivateNamespaceEnable = false,
+		.bypassVmid = MSM_VMID_NOACCESS,
+		.pAccessControl = &acc_ctl,
+		.pBypassBusAttrib = NULL,
+		.pBypassAuxConfig = NULL,
 	};
-	struct hal_vmidmt_default_secure_vmid_config secure_cfg = {
-		.secure_extensions = HAL_VMIDMT_SECURE_EXT_DEFAULT,
-		.b_glb_addr_space_restricted_acc_enable = 0,
-		.p_default_secure_config = &vmid_cfg,
+	HAL_vmidmt_DefaultSecureVmidConfigType secure_cfg = {
+		.secureExtensions = HAL_VMIDMT_SECURE_EXT_DEFAULT,
+		.bGlbAddrSpaceRestrictedAccEnable = 0,
+		.pDefaultSecureConfig = &vmid_cfg,
 	};
-	struct hal_vmidmt_bus_attrib bus_attribs;
-	struct hal_vmidmt_port_map *cfg;
-	enum hal_vmidmt_status rc;
+	HAL_vmidmt_BusAttribType bus_attribs;
+	HAL_vmidmt_Port_MapType *cfg;
+	HAL_vmidmt_Status rc;
 
 	cfg = get_info_cfg(VMIDMT_INSTANCE(g_vmidmt_cfg[index]));
 	if (!cfg)
@@ -171,9 +173,9 @@ static int config_options_per_master(int index)
 	memset(&bus_attribs, 0, sizeof(bus_attribs));
 
 	if (VMIDMT_INSTANCE(g_vmidmt_cfg[index]) == HAL_VMIDMT_DEHR) {
-		bus_attribs.e_nscfg = HAL_VMIDMT_NSCFG_SECURE;
-		vmid_cfg.p_bypass_bus_attrib = &bus_attribs;
-		vmid_cfg.bypass_vmid = ACC_VMID_NOACCESS;
+		bus_attribs.eNSCFG = HAL_VMIDMT_NSCFG_SECURE;
+		vmid_cfg.pBypassBusAttrib = &bus_attribs;
+		vmid_cfg.bypassVmid = MSM_VMID_NOACCESS;
 	}
 
 	rc = vmidmt_hal_init(&cfg->vmidmt_info, &secure_cfg, NULL, NULL);
@@ -197,7 +199,7 @@ static int config_options_per_master(int index)
 
 static int32_t configure_options(void)
 {
-	const struct vmidmt_cfg *p = g_vmidmt_cfg;
+	const vmidmt_cfg_t *p = g_vmidmt_cfg;
 	int ret = 0;
 
 	for (size_t i = 0; i < g_vmidmt_cfg_count; i++, p++) {
@@ -212,10 +214,10 @@ static int32_t configure_options(void)
 	return 0;
 }
 
-static void log_error(enum hal_vmidmt_instance vmidmt)
+static void log_error(HAL_vmidmt_InstanceType vmidmt)
 {
-	struct hal_vmidmt_port_map *cfg = NULL;
-	struct hal_vmidmt_error error = { 0 };
+	HAL_vmidmt_Port_MapType *cfg = NULL;
+	HAL_vmidmt_ErrorType error = { 0 };
 
 	cfg = get_info_cfg(vmidmt);
 	if (!cfg) {
@@ -230,24 +232,23 @@ static void log_error(enum hal_vmidmt_instance vmidmt)
 
 	vmidmt_hal_get_error(&cfg->vmidmt_info, true, &error);
 
-	ERROR("Error Flags: 0x%X\n", error.u_error_flags);
-	ERROR("Bus Flags: 0x%X\n", error.u_bus_flags);
-	ERROR("SSD Idx: 0x%X SID: 0x%X\n", error.u_ssd_index, error.u_sid);
-	ERROR("MID: 0x%X AVMID: 0x%X\n", error.u_master_id, error.u_avmid);
-	ERROR("ATID: 0x%X ABID: 0x%X APID: 0x%X\n", error.u_atid, error.u_abid,
-	      error.u_apid);
-	ERROR("Phys Addr: 0x%X 0x%X\n", error.u_physical_address_upper32,
-	      error.u_physical_address_lower32);
+	ERROR("Error Flags: 0x%X\n", error.uErrorFlags);
+	ERROR("Bus Flags: 0x%X\n", error.uBusFlags);
+	ERROR("SSD Idx: 0x%X SID: 0x%X\n", error.uSSDIndex, error.uSID);
+	ERROR("MID: 0x%X AVMID: 0x%X\n", error.uMasterId, error.uAVMID);
+	ERROR("ATID: 0x%X ABID: 0x%X APID: 0x%X\n",
+	      error.uATID, error.uABID, error.uAPID);
+	ERROR("Phys Addr: 0x%X 0x%X\n",
+	      error.uPhysicalAddressUpper32, error.uPhysicalAddressLower32);
 
 	vmidmt_hal_clear_error(&cfg->vmidmt_info, true);
 }
 
 static void log_errors(uint32_t reg, uint32_t pos)
 {
-	const struct vmidmt_err_pos_to_hal_map *row =
-		vmidmt_err_pos_to_hal_map[reg];
+	const vmidmt_err_pos_to_hal_map_t *row = vmidmt_err_pos_to_hal_map[reg];
 
-	for (size_t i = 0; i < ACC_VMIDMT_ERR_NUM_PER_REG; i++, row++) {
+	for (size_t i = 0; i < MSM_VMIDMT_ERR_NUM_PER_REG; i++, row++) {
 		if (row->bit_pos != pos)
 			continue;
 
@@ -282,7 +283,8 @@ static int32_t register_interrupts(void)
 	int ret = 0;
 
 	ret = qti_interrupt_svc_register(QTISECLIB_INT_ID_VMIDMT_ERR_CLT_SEC,
-					 error_handler, &vmidmt_err[CLT_SEC]);
+					 error_handler,
+					 &vmidmt_err[CLT_SEC]);
 	if (ret)
 		return ret;
 
@@ -293,7 +295,8 @@ static int32_t register_interrupts(void)
 		goto error3;
 
 	ret = qti_interrupt_svc_register(QTISECLIB_INT_ID_VMIDMT_ERR_CFG_SEC,
-					 error_handler, &vmidmt_err[CFG_SEC]);
+					 error_handler,
+					 &vmidmt_err[CFG_SEC]);
 	if (ret)
 		goto error2;
 
@@ -327,15 +330,15 @@ int vmidmt_configure(void)
 
 	rc = configure_options();
 	if (rc)
-		return ACC_ERR_VMIDMT_CFG_FAIL;
+		return MSM_ERR_VMIDMT_CFG_FAIL;
 
 	rc = configure_vmids();
 	if (rc)
-		return ACC_ERR_VMIDMT_CFG_FAIL;
+		return MSM_ERR_VMIDMT_CFG_FAIL;
 
 	rc = register_interrupts();
 	if (rc)
-		return ACC_ERR_VMIDMT_CFG_FAIL;
+		return MSM_ERR_VMIDMT_CFG_FAIL;
 
 	return 0;
 }

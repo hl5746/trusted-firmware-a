@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2026, Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef ACCESSCONTROL_H
-#define ACCESSCONTROL_H
+#ifndef QTI_ACCESSCONTROL_H
+#define QTI_ACCESSCONTROL_H
 
 #include <stdint.h>
 
@@ -28,4 +28,4 @@ uint64_t qti_accesscontrol_mem_assign(const qti_accesscontrol_mem_t *mem_info,
 				      uint32_t dst_len);
 void qti_accesscontrol_init(void);
 
-#endif /* ACCESSCONTROL_H */
+#endif /* QTI_ACCESSCONTROL_H */
