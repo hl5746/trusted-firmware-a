@@ -871,8 +871,6 @@ QTI platform port and SoC drivers
 :|F|: docs/plat/qti/
 :|F|: plat/qti/
 :|F|: drivers/qti/
-:|F|: include/drivers/qti/
-:|F|: tools/qti/
 
 QTI MSM8916 platform port
 ^^^^^^^^^^^^^^^^^^^^^^^^^
