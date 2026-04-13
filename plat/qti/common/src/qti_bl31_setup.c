@@ -28,8 +28,15 @@
 #include <qti_uart_console.h>
 #include <qtiseclib_interface.h>
 
-/* Variable to hold QTI UART configuration */
+#include <qti_ringbuf_console.h>
+#include <tfa_bl31_shared_imem.h>
+
+
+console_ringbuf_t g_qti_bl31_ringbuf;
+
+/* Variables to hold QTI UART and ring buffer configuration */
 static console_t g_qti_console_uart;
+static console_t g_qti_console_ringbuf;
 
 /*
  * Placeholder variables for copying the BL32 and Bl33 arguments that have been
@@ -60,6 +67,15 @@ void bl31_early_platform_setup(u_register_t from_bl2,
 	qti_console_uart_register(&g_qti_console_uart, PLAT_QTI_UART_BASE);
 	console_set_scope(&g_qti_console_uart, CONSOLE_FLAG_RUNTIME |
 			  CONSOLE_FLAG_BOOT | CONSOLE_FLAG_CRASH);
+
+	qti_console_ringbuf_init(&g_qti_bl31_ringbuf);
+	qti_console_ringbuf_register(&g_qti_console_ringbuf, (console_ringbuf_t*) &g_qti_bl31_ringbuf);
+	console_set_scope(&g_qti_console_ringbuf, CONSOLE_FLAG_RUNTIME);
+
+	/* Write the location of the ring buffer to shared imem */
+	*(uint64_t *)TFA_BL31_SHARED_IMEM_RING_LOG_BASE = (uint64_t)(&g_qti_bl31_ringbuf);
+		
+
 	/*
 	 * Tell BL31 where the non-trusted software image
 	 * is located and the entry state information

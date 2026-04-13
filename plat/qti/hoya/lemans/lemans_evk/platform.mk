@@ -83,6 +83,7 @@ BL31_SOURCES		+=	drivers/delay_timer/generic_delay_timer.c		\
 				${GICV3_SOURCES}					\
 				plat/common/plat_psci_common.c				\
 				$(PLAT_PATH)/common/src/$(ARCH)/qti_helpers.S		\
+				$(PLAT_PATH)/common/src/$(ARCH)/qti_ringbuf_console.S	\
 				$(PLAT_PATH)/common/src/pm_ps_hold.c			\
 				$(PLAT_PATH)/common/src/qti_bl31_setup.c		\
 				$(PLAT_PATH)/common/src/qti_gic_v3.c			\
@@ -91,7 +92,8 @@ BL31_SOURCES		+=	drivers/delay_timer/generic_delay_timer.c		\
 				$(PLAT_PATH)/common/src/qti_topology.c			\
 				$(PLAT_PATH)/common/src/qti_pm.c			\
 				$(PLAT_PATH)/common/src/spmi_arb.c			\
-				$(PLAT_PATH)/hoya/qtiseclib/src/qtiseclib_cb_interface.c
+				$(PLAT_PATH)/hoya/qtiseclib/src/qtiseclib_cb_interface.c	\
+				$(PLAT_PATH)/common/src/qti_ringbuf_console_helper.c
 
 BL31_SOURCES	+=		drivers/qti/sec_core/sec_core_stub.c \
 				drivers/qti/accesscontrol/access_control_stub.c
