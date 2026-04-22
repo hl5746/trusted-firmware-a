@@ -118,4 +118,3 @@ struct smmu_cfg_s qti_smmu_cfg[] = {
 };
 
 const size_t qti_smmu_cfg_count = sizeof(qti_smmu_cfg) / sizeof(*qti_smmu_cfg);
-

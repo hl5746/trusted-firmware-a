@@ -134,3 +134,4 @@ BL31_SOURCES	+=			drivers/qti/sec_core/sec_core_stub.c \
 LDFLAGS += -L $(dir $(QTISECLIB_PATH))
 LDLIBS += -l$(patsubst lib%.a,%,$(notdir $(QTISECLIB_PATH)))
 endif
+
